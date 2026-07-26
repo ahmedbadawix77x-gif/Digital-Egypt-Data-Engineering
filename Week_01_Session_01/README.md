@@ -7,44 +7,34 @@
 </p>
 
 ## 📌 Overview
-Welcome to the architectural analysis and reverse-engineering of **Fawry’s** data engineering ecosystem. Fawry is Egypt’s leading electronic payment network and digital finance platform, handling millions of financial transactions daily[cite: 1]. 
+Welcome to the architectural analysis and documentation of **Fawry’s** data engineering ecosystem. Fawry is Egypt’s leading electronic payment network and digital finance platform, handling millions of financial transactions daily. 
 
-This repository breaks down how Fawry transforms raw, distributed data sources into high-value financial products, automated micro-lending credit scores, and real-time fraud detection systems[cite: 1].
+This repository breaks down how raw, distributed data sources are organized into structured modules, simple storage layers, and clear data processing steps.
 
 ---
 
 ## 🗂️ Project Structure & Detailed Modules
-To ensure clean code architecture and modular design (similar to separating concerns in software engineering), the documentation and analysis are split into dedicated modules:
+To ensure clean organization and modular design, the documentation is split into dedicated modules:
 
 1. **[📥 01_Data_Sources.md](./01_Data_Sources.md)**
-   * Explores the omnichannel ingestion points: POS terminals, mobile wallets, and banking APIs[cite: 1].
-   * Analyzes data types, volume, and velocity (6 million daily transactions)[cite: 1].
+   * Explores omnichannel ingestion points: POS terminals, mobile wallets, and banking APIs.
+   * Analyzes basic transaction data sources and JSON structures.
 
 2. **[🗄️ 02_Storage_Layer.md](./02_Storage_Layer.md)**
-   * Details the hybrid storage architecture (Polyglot Persistence).
-   * Covers OLTP (PostgreSQL), NoSQL (Cassandra), and the Hadoop Data Lake for 10+ years of historical data[cite: 1].
+   * Explains the hybrid storage architecture (Polyglot Persistence).
+   * Covers transactional databases, fast lookups, and historical data archiving.
 
 3. **[⚙️ 03_Processing_ETL.md](./03_Processing_ETL.md)**
-   * Explains the core processing engine.
-   * Focuses on real-time streaming with **Apache Kafka**, batch ETL with **Apache Spark**, and pipeline orchestration with **Apache Airflow**[cite: 1].
+   * Explains the core processing concepts.
+   * Focuses on real-time streaming, batch operations, and workflow scheduling.
 
 4. **[📊 04_Serving_Analytics.md](./04_Serving_Analytics.md)**
    * Focuses on the Serving Layer.
-   * Explores AI-driven credit scoring (for the 5.7B EGP micro-lending portfolio), fraud detection, and executive BI dashboards[cite: 1].
-
----
-
-## 🛠️ Core Tech Stack Summary
-| Layer | Technologies | Primary Business Function |
-| :--- | :--- | :--- |
-| **Ingestion** | POS, Mobile Apps, REST APIs | Capturing omnichannel user transactions[cite: 1]. |
-| **Storage** | PostgreSQL, Cassandra, Hadoop | ACID compliance, high availability, and long-term archiving[cite: 1]. |
-| **Processing** | Apache Kafka, Spark, Airflow | Real-time streaming, heavy ETL, and dependency orchestration[cite: 1]. |
-| **Serving** | Python, Pandas, Hive, BI Tools | Predictive modeling, credit scoring, and executive reporting[cite: 1]. |
+   * Explores executive business intelligence, credit scoring summaries, and reporting.
 
 ---
 
 ## 📝 Methodology & References
-This system design was reverse-engineered using public technical requirements, professional engineering profiles, strategic investment reports (2025/2026), and foundational data engineering frameworks[cite: 1].
+This system design was structured using standard data engineering frameworks and real-world fintech use cases.
 
-* **Prepared By:** Hassan
+* **Prepared By:** AHmed Badawy
