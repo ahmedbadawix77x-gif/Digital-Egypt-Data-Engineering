@@ -1,125 +1,30 @@
+# ⚙️ Module 3: Processing Layer & ETL Pipelines
 
-# ⚙️ Module 3: Processing Layer & ETL Pipelines (Fawry Case Study)
+## 📌 Introduction & Simple Concept
+Once data is collected and stored, it needs to be moved around and processed. In a financial system, this happens in two main ways: **Real-time Processing** (handling things instantly as they happen, like fraud detection) and **Batch Processing** (handling heavy workloads at the end of the day, like calculating merchant salaries and settlements).
 
-## 📌 Overview
-Once data is ingested from millions of endpoints and stored across our hybrid storage tiers, it needs to be processed. In a FinTech ecosystem like Fawry, processing happens on two separate tracks simultaneously: **Real-time Streaming** (for fraud detection and instant notifications) and **Batch Processing** (for end-of-day merchant settlements and credit scoring).
-
-This document breaks down the core processing engines: Apache Kafka, Apache Spark, and Apache Airflow.
-
----
-
-## ⚡ 1. The Speed Layer (Apache Kafka)
-Kafka acts as the distributed commit log and central nervous system of the pipeline. It handles millions of events per second with single-digit millisecond latency, decoupling data producers from consumers.
-
-* **Core Topics:**
-  * `txn-incoming`: Raw transactions hitting the API gateway.
-  * `txn-fraud-alerts`: Transactions flagged instantly by AI security models.
-  * `txn-settled`: Successfully processed payment confirmations.
-
-**Simulated Kafka Consumer Configuration (Python):**
-```python
-from confluent_kafka import Consumer
-
-conf = {
-    'bootstrap.servers': 'kafka-cluster-01.fawry.local:9092',
-    'group.id': 'fraud_detection_group',
-    'auto.offset.reset': 'earliest',
-    'enable.auto.commit': False
-}
-
-consumer = Consumer(conf)
-consumer.subscribe(['txn-incoming'])
-
-while True:
-    msg = consumer.poll(timeout=1.0)
-    if msg is None:
-        continue
-    if msg.error():
-        print(f"Consumer error: {msg.error()}")
-        continue
-    
-    # Process event for real-time fraud checks
-    print(f"Processing live transaction: {msg.value().decode('utf-8')}")
-
-```
+This module explains the core components of the processing layer in simple terms.
 
 ---
 
-## 🔄 2. The Batch Layer (Apache Spark)
+## ⚡ 1. The Speed Layer (Real-time Streaming)
+* **What is it?** A system designed to handle live incoming events instantly (with millisecond latency).
+* **Why use it?** It ensures that if a fraudulent transaction happens, the system can catch it and block it before it goes through.
 
-While Kafka handles live streams, Apache Spark is utilized for heavy, end-of-day (EOD) processing. It extracts historical data, transforms it, and computes financial settlements for over 395,700 merchants.
+## 🔄 2. The Batch Layer (Heavy Processing)
+* **What is it?** A processing engine that runs massive data tasks all at once, usually at night or at the end of the business day.
+* **Why use it?** It calculates commissions, daily sales totals, and payouts for over 395,700 merchants across Egypt.
 
-**Simulated PySpark ETL Job (Merchant Settlement):**
-
-```python
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, sum, round
-
-spark = SparkSession.builder \
-    .appName("Fawry_EOD_Merchant_Settlement") \
-    .getOrCreate()
-
-# Load raw transactions from Hadoop Data Lake
-df_transactions = spark.read.parquet("hdfs://namenode:8020/data/raw/transactions/date=2026-07-25/")
-
-# Filter successful transactions
-df_success = df_transactions.filter(col("status") == "SUCCESS")
-
-# Calculate Commission (1.5% fee) and Net Payout
-df_commission = df_success.withColumn("fawry_fee", round(col("amount_egp") * 0.015, 2)) \
-                          .withColumn("merchant_payout", col("amount_egp") - col("fawry_fee"))
-
-# Aggregate by Merchant ID
-df_settlement = df_commission.groupBy("merchant_id") \
-                             .agg(
-                                 sum("amount_egp").alias("total_sales"),
-                                 sum("fawry_fee").alias("total_fees"),
-                                 sum("merchant_payout").alias("net_payout")
-                             )
-
-# Write results to database for next-day payouts
-df_settlement.write \
-    .format("jdbc") \
-    .option("url", "jdbc:postgresql://oltp-db.fawry.local/finance") \
-    .option("dbtable", "daily_settlements") \
-    .save()
-
-```
+## ⏱️ 3. Pipeline Orchestration (Scheduling)
+* **What is it?** The manager or traffic controller of our data pipelines.
+* **Why use it?** It makes sure that tasks run in the correct order automatically (for example: don't calculate settlements until all raw data is safely extracted).
 
 ---
 
-## ⏱️ 3. Pipeline Orchestration (Apache Airflow)
+## 💻 Assignment Solution: Processing Pipeline Summary
 
-Airflow manages the dependencies and execution schedules of all batch jobs. It ensures that critical tasks—like calculating merchant settlements—never run before the raw data extraction from the data lake is 100% complete.
+Below is the simple summary representing the assignment answers for this module:
 
-**Simulated Airflow DAG Configuration:**
-
-```python
-from airflow import DAG
-from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
-from datetime import datetime, timedelta
-
-default_args = {
-    'owner': 'data_engineering_team',
-    'depends_on_past': True,
-    'start_date': datetime(2026, 7, 25),
-    'retries': 3,
-    'retry_delay': timedelta(minutes=5),
-}
-
-with DAG('fawry_daily_etl_pipeline', default_args=default_args, schedule_interval='@daily') as dag:
-    
-    extract_to_hdfs = SparkSubmitOperator(
-        task_id='extract_rdbms_to_hdfs',
-        application='/opt/spark_jobs/extract_job.py'
-    )
-    
-    calculate_settlements = SparkSubmitOperator(
-        task_id='calculate_merchant_settlements',
-        application='/opt/spark_jobs/merchant_settlement.py'
-    )
-    
-    # Define task dependencies
-    extract_to_hdfs >> calculate_settlements
-
-
+* **Real-time Track (Streaming):** Handles instant transaction events for immediate security and status updates.
+* **Batch Track (EOD Jobs):** Handles end-of-day merchant financial summaries, commission calculations, and database updates.
+* **Orchestration Task:** Manages workflow dependencies, schedules, and automated retries if a task fails.
