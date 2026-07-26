@@ -122,9 +122,4 @@ with DAG('fawry_daily_etl_pipeline', default_args=default_args, schedule_interva
     # Define task dependencies
     extract_to_hdfs >> calculate_settlements
 
-```
-
----
-
-*Next Track: Moving forward to Session 2 and advanced data engineering pipelines.*
 
