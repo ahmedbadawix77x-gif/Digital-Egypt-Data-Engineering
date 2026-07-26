@@ -37,4 +37,4 @@ To ensure clean organization and modular design, the documentation is split into
 ## 📝 Methodology & References
 This system design was structured using standard data engineering frameworks and real-world fintech use cases.
 
-* **Prepared By:** AHmed Badawy
+* **Prepared By:** Ahmed Badawy
