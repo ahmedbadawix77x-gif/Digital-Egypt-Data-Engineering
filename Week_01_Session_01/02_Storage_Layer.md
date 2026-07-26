@@ -72,7 +72,4 @@ CREATE TABLE fawry_distributed.user_profiles (
 * **Separation of Concerns:** Active money movement (PostgreSQL) is strictly isolated from historical data analysis (Hadoop).
 * **Fault Tolerance:** If the analytical cluster experiences heavy batch loads, the core payment gateway remains completely unaffected.
 
----
 
-
-```
