@@ -24,7 +24,10 @@ This document breaks down the primary data sources, the velocity and volume of i
 * **Data Nature:** Secure, encrypted REST APIs and SOAP web services operating via API Gateways.
 
 ---
-
+## ⚙️ Engineering Challenges at the Ingestion Point
+* **High Concurrency:** Handling massive traffic spikes during peak hours (e.g., end-of-month utility billing deadlines).
+* **Network Resilience:** POS terminals in remote areas may suffer from intermittent internet connectivity, requiring local queuing and retry mechanisms.
+* **Security & Validation:** Every incoming payload must be instantly authenticated using merchant tokens and device signatures before hitting the core pipeline.
 ## 💻 Simulated Ingestion Payload (JSON)
 
 When a customer pays a utility bill at a local merchant POS machine, a raw JSON event is transmitted to Fawry's edge ingestion servers:
